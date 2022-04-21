@@ -15,7 +15,8 @@ app.use(express.json());
 app.use(cors());
 
 //routes
-app.use("/tasks",require("./routes/task.routes"))
+app.use("/tasks",require("./routes/task.routes"));
+app.use("/users",require("./routes/users.routes"));
 
 //static files
 // app.use(express.static()) 

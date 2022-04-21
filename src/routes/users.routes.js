@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+const Users = require("../models/users")
 
-})
 
-router.get('/signup', (req, res, next) => {
+router.get('/more', async (req, res) => {
+    const users = await Users.find();
+    console.log(users);
+    res.json(users)
+});
 
-})
 
-router.post('/signup', (req, res, next) => {
 
-})
 
-router.get('/signin', (req, res, next) => {
-
-})
-
-router.post('/signin', (req, res, next) => {
-
+router.post("/create", async (req, res) => {
+    const {Name, Password, ItsAdmin} = req.body;
+    const users = new Users({Name, Password, ItsAdmin}) 
+    await users.save();
+    console.log(users)
+    res.json({status: "user save"})
 })
 
 module.exports = router;
