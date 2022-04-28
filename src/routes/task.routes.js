@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
 
 router.post("/", async (req, res) => {
     try{
-    const {Nombre, Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles, DireccionCasa, Localidad, Telefono1, Telefono2} = req.body;
-    const task = new Task({Nombre, Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles, DireccionCasa, Localidad, Telefono1, Telefono2}) 
+    const {Estado, Nombre, Producto, Precio, Dias, Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles, DireccionCasa, Localidad, Telefono1, Telefono2} = req.body;
+    const task = new Task({Estado, Nombre, Producto, Precio, Dias, Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles, DireccionCasa, Localidad, Telefono1, Telefono2}) 
     await task.save();
     res.json({status: "task save"})}
     catch (error) {
@@ -26,9 +26,10 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     try {
-    const {Nombre, Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles, DireccionCasa, Localidad, Telefono1, Telefono2} = req.body;
-    const newTask = {Nombre, Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles, DireccionCasa, Localidad, Telefono1, Telefono2};
-    Task.findByIdAndUpdate(req.params.id, newTask)
+    const {Estado} = req.body;
+    const newTask = {Estado};
+    console.log(newTask)
+    await Task.findByIdAndUpdate(req.params.id, newTask)
     res.json({status: "success"})}
     catch (error) { console.log(error)}
 })
@@ -37,11 +38,12 @@ router.get('/:id', async (req, res) => {
     try{
     const { id: id } = req.params;
     const task = await Task.findById(req.params.id)
+    console.log(task)
     if (!mongoose.Types.ObjectId.isValid({ _id: id })) 
     return res.status(200).json({ msg: `id :${id}`});}
     catch (error) {
         console.log(error);
-       }
+    }
     
 })
 
