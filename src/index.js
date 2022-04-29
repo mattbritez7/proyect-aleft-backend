@@ -6,7 +6,6 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
-
 const app = express();
 require('./database')
 require('./passport/local-auth');

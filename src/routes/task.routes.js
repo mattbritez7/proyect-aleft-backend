@@ -6,12 +6,45 @@ const Task = require("../models/task")
 
 router.get('/', async (req, res) => {
     try {
-    const tasks = await Task.find();
-    console.log(tasks);
-    res.json(tasks)}catch (error) {
+        const tasks = await Task.find();
+        console.log(tasks);
+        res.json(tasks)
+    }catch (error) {
         console.log(error);
-       }
+    }
 });
+
+router.get('/pendiente', async (req, res) => {
+    try {
+        const tasks = await Task.find({Estado: "Pendiente"});
+        console.log(tasks);
+        res.json(tasks)
+    }catch (error) {
+        console.log(error);
+    }
+});
+
+router.get('/aprobado', async (req, res) => {
+    try {
+        const tasks = await Task.find({Estado: "Aprobado"});
+        console.log(tasks);
+        res.json(tasks)
+    }catch (error) {
+        console.log(error);
+    }
+});
+
+router.get('/entregado', async (req, res) => {
+    try {
+        const tasks = await Task.find({Estado: "Entregado"});
+        console.log(tasks);
+        res.json(tasks)
+    }catch (error) {
+        console.log(error);
+    }
+});
+
+
 
 router.post("/", async (req, res) => {
     try{
@@ -46,6 +79,10 @@ router.get('/:id', async (req, res) => {
     }
     
 })
+
+
+
+
 
 router.delete("/:id", async (req, res) => {
     try {
