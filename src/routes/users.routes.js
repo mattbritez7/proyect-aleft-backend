@@ -4,20 +4,11 @@ const User = require("../models/users")
 const passport = require('passport');
 
 
-router.post("/login", (req, res, next) => {
-  
-  passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) res.send("No User Exists");
-    else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send("Successfully Authenticated");
-        console.log(req.user);
-      });
-    }
-  })(req, res, next);
-});
+router.post('/login', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
 
 
 router.post("/register", (req, res) => {
@@ -30,6 +21,7 @@ router.post("/register", (req, res) => {
       const newUser = new User({
         Email: req.body.Email,
         Password: hashedPassword,
+        username: req.body.username
       });
       await newUser.save();
       res.send("User Created");

@@ -5,10 +5,11 @@ const passport = require('passport');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+require('./passport/local-auth')
 
 const app = express();
 require('./database')
-require('./passport/local-auth');
+
 
 //settings
 app.set("port", process.env.PORT || 4000);
@@ -37,7 +38,6 @@ app.use(
 app.use(cookieParser("secretcode"));
 app.use(passport.initialize());
 app.use(passport.session());
-require('./passport/local-auth')(passport)
   
 //routes
 app.use("/tasks",require("./routes/task.routes"));

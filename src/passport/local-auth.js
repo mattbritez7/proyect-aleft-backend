@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const User = require("../models/users")
 
-module.exports = function (passport) {
+function passport() {
   passport.use(
     new LocalStrategy( (Email, Password, done) => {
       User.findOne({ Email: Email}, (err, user) => {
@@ -33,3 +33,6 @@ module.exports = function (passport) {
     });
   });
 };
+
+
+module.exports = passport
