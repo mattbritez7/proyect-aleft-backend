@@ -4,7 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const cors = require('cors');
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
 require('./passport/local-auth')
 
 const app = express();
@@ -29,13 +29,13 @@ app.use(
 );
 app.use(
   session({
-    secret: "secretcode",
-    resave: true,
-    saveUninitialized: true,
+    secret: "secret", // secretcode
+    resave: false, // true
+    saveUninitialized: false, //true,
   })
 );
 
-app.use(cookieParser("secretcode"));
+// app.use(cookieParser("secretcode"));
 app.use(passport.initialize());
 app.use(passport.session());
   

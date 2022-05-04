@@ -5,14 +5,15 @@ const passport = require('passport');
 
 
 router.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local'),
   function(req, res) {
-    res.redirect('/');
+    const frontendUrl = process.env.FRONTEND_URL || '/';
+
+    res.redirect(frontendUrl);
   });
 
 
 router.post("/register", (req, res) => {
-
   User.findOne({ Email: req.body.Email }, async (err, doc) => {
     console.log(req.body.Email)
     
