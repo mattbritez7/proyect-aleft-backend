@@ -4,14 +4,13 @@ const User = require("../models/users")
 const passport = require('passport');
 
 
+
 router.post('/login', 
   passport.authenticate('local'),
   function(req, res) {
-    const frontendUrl = process.env.FRONTEND_URL || '/';
-
-    res.redirect(frontendUrl);
-  });
-
+    res.status(200).send(req.user)
+    
+  })
 
 router.post("/register", (req, res) => {
   User.findOne({ Email: req.body.Email }, async (err, doc) => {
@@ -22,7 +21,8 @@ router.post("/register", (req, res) => {
       const newUser = new User({
         Email: req.body.Email,
         Password: hashedPassword,
-        username: req.body.username
+        username: req.body.username,
+        IsAdmin: req.body.IsAdmin
       });
       await newUser.save();
       res.send("User Created");
@@ -31,8 +31,20 @@ router.post("/register", (req, res) => {
   });
 });
 
-router.get("/user", (req, res) => {
+
+router.get("/me", (req, res) => {
+
+  res.send(req.user.username); // The req.user stores the entire user that has been authenticated inside of it.
+});
+
+router.get("/profile", (req, res) => {
+
   res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
 });
 
+router.post("/logout", (req, res)=>{
+  req.logout();
+  res.status(200).send(req.body)
+})
+  
 module.exports = router;

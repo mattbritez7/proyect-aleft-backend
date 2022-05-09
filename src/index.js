@@ -25,8 +25,10 @@ app.use(
   cors({
     origin: "http://localhost:3000", // <-- location of the react app were connecting to
     credentials: true,
+    
   })
 );
+
 app.use(
   session({
     secret: "secret", // secretcode

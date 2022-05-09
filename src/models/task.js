@@ -15,7 +15,8 @@ const TaskSchema = new Schema ({
     DireccionCasa: { type: String, required: false},
     Localidad: { type: String, required: false},
     Telefono1: { type: String, required: false},
-    Telefono2: { type: String, required: false}
+    Telefono2: { type: String, required: false},
+    user: { type: String, required: false}
 });
 
 module.exports = mongoose.model("Task", TaskSchema);
