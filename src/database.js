@@ -7,8 +7,13 @@ const dbname = process.env.DB_NAME
 
 const url = `mongodb+srv://${user}:${password}@cluster0.cv2me.mongodb.net/${dbname}?retryWrites=true&w=majority&authSource=admin`
 
+const seedTaskStates = require('./seed');
+
 mongoose.connect(url)
-.then(db => console.log('Connect database'))
+.then(async () => {
+  console.log('Connect database');
+  await seedTaskStates();
+})
 .catch(err => console.error(err))
 
 module.exports = mongoose;

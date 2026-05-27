@@ -43,7 +43,7 @@ app.use(passport.initialize());
 app.use(passport.session());
   
 //routes
-app.use("/tasks",require("./routes/task.routes"));
+app.use("/sales",require("./routes/sale.routes"));
 app.use("/users",require("./routes/users.routes"));
 
 //static files
