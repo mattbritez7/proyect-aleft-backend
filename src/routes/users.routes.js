@@ -5,12 +5,16 @@ const passport = require('passport');
 
 
 
-router.post('/login', 
-  passport.authenticate('local'),
-  function(req, res) {
-    res.status(200).send(req.user)
-    
-  })
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) return next(err);
+    if (!user) return res.status(401).json({ msg: info.message });
+    req.logIn(user, function(err) {
+      if (err) return next(err);
+      res.status(200).send(req.user);
+    });
+  })(req, res, next);
+})
 
 router.post("/register", async (req, res) => {
   try {
