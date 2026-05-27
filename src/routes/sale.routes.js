@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/mis-ventas", async (req, res) => {
+router.get("/my-sales", async (req, res) => {
     try {
       const sales = await Sale.find({ user: req.user.username});
       console.log(sales);
@@ -27,34 +27,34 @@ router.get("/mis-ventas", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const {
-      Estado,
-      Nombre,
-      Producto,
-      Precio,
-      Dias,
-      Dni,
-      FechaDeNacimiento,
-      DireccionDelComercio,
-      EntreCalles,
-      DireccionCasa,
-      Localidad,
-      Telefono1,
-      Telefono2,
+      status,
+      name,
+      product,
+      price,
+      days,
+      dni,
+      dateOfBirth,
+      businessAddress,
+      betweenStreets,
+      homeAddress,
+      locality,
+      phone1,
+      phone2,
     } = req.body;
     const sale = new Sale({
-      Estado,
-      Nombre,
-      Producto,
-      Precio,
-      Dias,
-      Dni,
-      FechaDeNacimiento,
-      DireccionDelComercio,
-      EntreCalles,
-      DireccionCasa,
-      Localidad,
-      Telefono1,
-      Telefono2,
+      status,
+      name,
+      product,
+      price,
+      days,
+      dni,
+      dateOfBirth,
+      businessAddress,
+      betweenStreets,
+      homeAddress,
+      locality,
+      phone1,
+      phone2,
     });
     sale.user = req.user.username;
     await sale.save();
@@ -66,8 +66,8 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    const { Estado } = req.body;
-    const newSale = { Estado };
+    const { status } = req.body;
+    const newSale = { status };
     console.log(newSale);
     await Sale.findByIdAndUpdate(req.params.id, newSale);
     res.json({ status: "success" });

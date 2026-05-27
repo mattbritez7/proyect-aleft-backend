@@ -1,17 +1,17 @@
-const TaskState = require("./models/taskState");
+const SaleState = require("./models/saleState");
 
 const states = [
-  { code: 1, name: "Pendiente" },
-  { code: 2, name: "Aprobado" },
-  { code: 3, name: "Entregado" },
+  { code: 1, name: "Pending" },
+  { code: 2, name: "Approved" },
+  { code: 3, name: "Delivered" },
 ];
 
-async function seedTaskStates() {
-  const count = await TaskState.countDocuments();
+async function loadSaleStates() {
+  const count = await SaleState.countDocuments();
   if (count === 0) {
-    await TaskState.insertMany(states);
-    console.log("Sale states seeded");
+    await SaleState.insertMany(states);
+    console.log("Sale states loaded");
   }
 }
 
-module.exports = seedTaskStates;
+module.exports = loadSaleStates;
