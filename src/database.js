@@ -1,11 +1,11 @@
 
 const mongoose = require('mongoose');
 
-const user = process.env.DB_USER            || "mattbritez7"
-const password = process.env.DB_PASSWORD    || "THEGAMERORI7"
-const dbname = process.env.DB_NAME          || "alef"
+const user = process.env.DB_USER
+const password = process.env.DB_PASSWORD
+const dbname = process.env.DB_NAME
 
-const url = `mongodb+srv://${user}:${password}@cluster0.cv2me.mongodb.net/${dbname}?retryWrites=true&w=majority`
+const url = `mongodb+srv://${user}:${password}@cluster0.cv2me.mongodb.net/${dbname}?retryWrites=true&w=majority&authSource=admin`
 
 mongoose.connect(url)
 .then(db => console.log('Connect database'))

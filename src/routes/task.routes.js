@@ -108,13 +108,15 @@ router.put("/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const { id: id } = req.params;
-    const task = await Task.findById(req.params.id);
-    console.log(task);
-    if (!mongoose.Types.ObjectId.isValid({ _id: id }))
-      return res.status(200).json({ msg: `id :${id}` });
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id))
+      return res.status(400).json({ msg: `Invalid id: ${id}` });
+    const task = await Task.findById(id);
+    if (!task) return res.status(404).json({ msg: "Task not found" });
+    res.json(task);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ msg: "Server error" });
   }
 });
 
