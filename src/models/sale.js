@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const  { Schema } = mongoose;
 
-const TaskSchema = new Schema ({ 
-    Estado: { type: String, default: 'Pendiente', required: false},
+const SaleSchema = new Schema ({ 
+    Estado: { type: Number, default: 1, required: false},
     Nombre: { type: String, required: false},
     Producto: { type: String, required: false},
     Precio: { type: String, required: false},
@@ -19,4 +19,4 @@ const TaskSchema = new Schema ({
     user: { type: String, required: false}
 });
 
-module.exports = mongoose.model("Task", TaskSchema);
+module.exports = mongoose.model("Sale", SaleSchema);
