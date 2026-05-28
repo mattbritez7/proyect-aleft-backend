@@ -7,12 +7,12 @@ const dbname = process.env.DB_NAME
 
 const url = `mongodb+srv://${user}:${password}@cluster0.cv2me.mongodb.net/${dbname}?retryWrites=true&w=majority&authSource=admin`
 
-const seedTaskStates = require('./seed');
+const seedSaleStates = require('./seed');
 
 mongoose.connect(url)
 .then(async () => {
   console.log('Connect database');
-  await seedTaskStates();
+  await seedSaleStates();
 })
 .catch(err => console.error(err))
 
