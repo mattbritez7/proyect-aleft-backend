@@ -51,5 +51,30 @@ router.post("/logout", (req, res)=>{
   req.logout();
   res.status(200).send(req.body)
 })
-  
+
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find({}, { Password: 0 });
+    res.json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Error al obtener usuarios" });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  try {
+    const { Password } = req.body;
+    if (!Password || Password.length < 6) {
+      return res.status(400).json({ msg: "La contraseña debe tener al menos 6 caracteres" });
+    }
+    const hashedPassword = await bcrypt.hash(Password, 10);
+    await User.findByIdAndUpdate(req.params.id, { Password: hashedPassword });
+    res.json({ status: "success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Error al actualizar usuario" });
+  }
+});
+
 module.exports = router;
