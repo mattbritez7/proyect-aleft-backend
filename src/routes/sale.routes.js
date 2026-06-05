@@ -66,8 +66,10 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    const { Estado } = req.body;
-    const newSale = { Estado };
+    const { Estado, Company } = req.body;
+    const newSale = {};
+    if (Estado !== undefined) newSale.Estado = Estado;
+    if (Company !== undefined) newSale.Company = Company;
     console.log(newSale);
     await Sale.findByIdAndUpdate(req.params.id, newSale);
     res.json({ status: "success" });

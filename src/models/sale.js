@@ -16,6 +16,7 @@ const SaleSchema = new Schema ({
     Localidad: { type: String, required: false},
     Telefono1: { type: String, required: false},
     Telefono2: { type: String, required: false},
+    Company: { type: String, default: "", required: false},
     user: { type: String, required: false}
 });
 

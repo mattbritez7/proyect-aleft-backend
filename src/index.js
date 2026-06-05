@@ -45,6 +45,7 @@ app.use(passport.session());
 //routes
 app.use("/sales",require("./routes/sale.routes"));
 app.use("/users",require("./routes/users.routes"));
+app.use("/companies",require("./routes/companies.routes"));
 
 //static files
 // app.use(express.static()) 
