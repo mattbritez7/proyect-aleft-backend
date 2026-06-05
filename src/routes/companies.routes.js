@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Company = require('../models/company');
+const Sale = require('../models/sale');
 
 router.get('/', async (req, res) => {
     try {
@@ -27,7 +28,11 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        await Company.findByIdAndDelete(req.params.id);
+        const company = await Company.findById(req.params.id);
+        if (company) {
+            await Sale.updateMany({ Company: company.name }, { Company: "" });
+            await Company.findByIdAndDelete(req.params.id);
+        }
         res.json({ message: 'Empresa eliminada' });
     } catch (err) {
         res.status(400).json({ message: err.message });
