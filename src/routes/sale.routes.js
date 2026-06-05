@@ -6,7 +6,14 @@ const Sale = require("../models/sale");
 
 router.get("/", async (req, res) => {
   try {
-    const sales = await Sale.find();
+    let sales;
+    if (req.user.role === 'admin') {
+      sales = await Sale.find();
+    } else if (req.user.role === 'cliente') {
+      sales = await Sale.find({ Company: req.user.Company });
+    } else {
+      sales = await Sale.find({ user: req.user.username });
+    }
     console.log(sales);
     res.json(sales);
   } catch (error) {
@@ -69,8 +76,7 @@ router.put("/:id", async (req, res) => {
     const { Estado, Company } = req.body;
     const newSale = {};
     if (Estado !== undefined) newSale.Estado = Estado;
-    if (Company !== undefined) newSale.Company = Company;
-    console.log(newSale);
+    if (Company !== undefined && req.user.role === 'admin') newSale.Company = Company;
     await Sale.findByIdAndUpdate(req.params.id, newSale);
     res.json({ status: "success" });
   } catch (error) {

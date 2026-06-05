@@ -3,8 +3,6 @@ const bcrypt = require("bcrypt");
 const User = require("../models/users")
 const passport = require('passport');
 
-
-
 router.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err);
@@ -18,14 +16,14 @@ router.post('/login', function(req, res, next) {
 
 router.post("/register", async (req, res) => {
   try {
-    console.log(req.body.Email)
     const hashedPassword = await bcrypt.hash(req.body.Password, 10);
 
     const newUser = new User({
       Email: req.body.Email,
       Password: hashedPassword,
       username: req.body.username,
-      IsAdmin: req.body.IsAdmin
+      role: req.body.role || 'cliente',
+      Company: req.body.Company || ''
     });
     await newUser.save();
     res.send("User Created");
@@ -36,15 +34,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
 router.get("/me", (req, res) => {
   if (!req.user) return res.status(401).send("Not authenticated");
-  res.send(req.user.username);
+  res.send(req.user);
 });
 
 router.get("/profile", (req, res) => {
-
-  res.send(req.user); // The req.user stores the entire user that has been authenticated inside of it.
+  res.send(req.user);
 });
 
 router.post("/logout", (req, res)=>{
@@ -64,12 +60,16 @@ router.get("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    const { Password } = req.body;
-    if (!Password || Password.length < 6) {
-      return res.status(400).json({ msg: "La contraseña debe tener al menos 6 caracteres" });
+    const update = {};
+    if (req.body.Password) {
+      if (req.body.Password.length < 6) {
+        return res.status(400).json({ msg: "La contraseña debe tener al menos 6 caracteres" });
+      }
+      update.Password = await bcrypt.hash(req.body.Password, 10);
     }
-    const hashedPassword = await bcrypt.hash(Password, 10);
-    await User.findByIdAndUpdate(req.params.id, { Password: hashedPassword });
+    if (req.body.role) update.role = req.body.role;
+    if (req.body.Company !== undefined) update.Company = req.body.Company;
+    await User.findByIdAndUpdate(req.params.id, update);
     res.json({ status: "success" });
   } catch (error) {
     console.log(error);
