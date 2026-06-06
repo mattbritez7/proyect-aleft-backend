@@ -18,7 +18,7 @@ async function migrate() {
   console.log(`Usuarios con IsAdmin (schema antiguo): ${oldUsers.length}`);
 
   for (const u of oldUsers) {
-    const newRole = u.IsAdmin ? 'admin' : 'vendedor';
+    const newRole = u.IsAdmin ? 'administrador' : 'vendedor';
     await collection.updateOne(
       { _id: u._id },
       { $set: { role: newRole, Company: '' }, $unset: { IsAdmin: '' } }

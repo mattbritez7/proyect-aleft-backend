@@ -6,8 +6,9 @@ const Sale = require("../models/sale");
 
 router.get("/", async (req, res) => {
   try {
+    if (!req.user) return res.status(401).json({ msg: "No autenticado" });
     let sales;
-    if (req.user.role === 'admin') {
+    if (req.user.role === 'administrador') {
       sales = await Sale.find();
     } else if (req.user.role === 'cliente') {
       sales = await Sale.find({ Company: req.user.Company });
@@ -18,6 +19,7 @@ router.get("/", async (req, res) => {
     res.json(sales);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ msg: "Error del servidor" });
   }
 });
 
@@ -73,14 +75,18 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
+    if (!req.user) return res.status(401).json({ msg: "No autenticado" });
     const { Estado, Company } = req.body;
+    console.log("PUT /sales/:id body:", req.body, "user:", req.user.username, "role:", req.user.role);
     const newSale = {};
-    if (Estado !== undefined) newSale.Estado = Estado;
-    if (Company !== undefined && req.user.role === 'admin') newSale.Company = Company;
+    if (Estado !== undefined) newSale.Estado = Number(Estado);
+    if (Company !== undefined && req.user.role === 'administrador') newSale.Company = Company;
+    console.log("Updating with:", newSale);
     await Sale.findByIdAndUpdate(req.params.id, newSale);
     res.json({ status: "success" });
   } catch (error) {
-    console.log(error);
+    console.log("Error en PUT /sales/:id", error);
+    res.status(500).json({ msg: "Error del servidor" });
   }
 });
 
