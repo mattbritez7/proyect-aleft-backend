@@ -15,6 +15,16 @@ require('./database')
 //settings
 app.set("port", process.env.PORT || 4000);
 
+// Validate required environment variables
+const requiredEnvVars = ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'SESSION_SECRET', 'CORS_ORIGIN'];
+const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+  console.error(`Error: Missing required environment variables: ${missingVars.join(', ')}`);
+  process.exit(1);
+}
+
+app.set('trust proxy', 1);
+
 //middlewares
 app.use(morgan("dev"));
 app.use(express.json());
@@ -24,17 +34,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // <-- location of the react app were connecting to
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
-    
   })
 );
 
 app.use(
   session({
-    secret: "secret", // secretcode
-    resave: false, // true
-    saveUninitialized: false, //true,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
   })
 );
 
