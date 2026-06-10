@@ -4,6 +4,7 @@ const states = [
   { code: 1, name: "Pendiente" },
   { code: 2, name: "Aprobado" },
   { code: 3, name: "Entregado" },
+  { code: 4, name: "Desaprobado" },
 ];
 
 async function seedSaleStates() {

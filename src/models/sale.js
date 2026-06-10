@@ -8,6 +8,7 @@ const SaleSchema = new Schema ({
     Producto: { type: String, required: false},
     Precio: { type: String, required: false},
     Dias: { type: String, required: false},
+    Modalidad: { type: String, enum: ['diario', 'semanal', 'mensual'], required: false},
     Dni: { type: String, required: false},
     FechaDeNacimiento: { type: String, required: false},
     DireccionDelComercio: { type: String, required: false},
