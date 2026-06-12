@@ -10,12 +10,6 @@ const bodyParser = require("body-parser");
 require('./passport/local-auth')
 
 const app = express();
-const mongoose = require('mongoose');
-require('./database')
-
-
-//settings
-app.set("port", process.env.PORT || 4000);
 
 // Validate required environment variables
 const requiredEnvVars = ['DB_USER', 'DB_PASSWORD', 'DB_NAME', 'SESSION_SECRET', 'CORS_ORIGIN'];
@@ -25,6 +19,8 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
+//settings
+app.set("port", process.env.PORT || 4000);
 app.set('trust proxy', 1);
 
 //middlewares
@@ -41,48 +37,63 @@ app.use(
   })
 );
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      client: mongoose.connection.getClient(),
-      ttl: 7 * 24 * 60 * 60,
-      autoRemove: 'native',
-    }),
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
+const mongoose = require('mongoose');
+const user = process.env.DB_USER;
+const password = process.env.DB_PASSWORD;
+const dbname = process.env.DB_NAME;
+const url = `mongodb+srv://${user}:${password}@cluster0.cv2me.mongodb.net/${dbname}?retryWrites=true&w=majority&authSource=admin`;
+
+mongoose.connect(url)
+  .then(async () => {
+    console.log('Connect database');
+    await require('./seed')();
+    
+    app.use(
+      session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+          client: mongoose.connection.getClient(),
+          ttl: 7 * 24 * 60 * 60,
+          autoRemove: 'native',
+        }),
+        cookie: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+        },
+      })
+    );
+
+    // app.use(cookieParser("secretcode"));
+    app.use(passport.initialize());
+    app.use(passport.session());
+      
+    //routes
+    app.use("/sales",require("./routes/sale.routes"));
+    app.use("/users",require("./routes/users.routes"));
+    app.use("/companies",require("./routes/companies.routes"));
+
+    //static files
+    // app.use(express.static()) 
+
+    // Global error-handling middleware
+    app.use((err, req, res, next) => {
+      console.error("Error no manejado:", err);
+      res.status(err.status || 500).json({
+        msg: err.message || "Error interno del servidor",
+        error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+      });
+    });
+
+    //start server
+    app.listen(app.get("port"), ()=> {
+        console.log('listening on port ' + app.get("port"))
+    });
   })
-);
-
-// app.use(cookieParser("secretcode"));
-app.use(passport.initialize());
-app.use(passport.session());
-  
-//routes
-app.use("/sales",require("./routes/sale.routes"));
-app.use("/users",require("./routes/users.routes"));
-app.use("/companies",require("./routes/companies.routes"));
-
-//static files
-// app.use(express.static()) 
-
-// Global error-handling middleware
-app.use((err, req, res, next) => {
-  console.error("Error no manejado:", err);
-  res.status(err.status || 500).json({
-    msg: err.message || "Error interno del servidor",
-    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  .catch(err => {
+    console.error('Error connecting to database:', err.message);
+    process.exit(1);
   });
-});
-
-//start server
-
-app.listen(app.get("port"), ()=> {
-    console.log('listening on port ' + app.get("port"))
-})
