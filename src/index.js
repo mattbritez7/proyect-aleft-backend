@@ -65,6 +65,15 @@ app.use("/companies",require("./routes/companies.routes"));
 //static files
 // app.use(express.static()) 
 
+// Global error-handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error no manejado:", err);
+  res.status(err.status || 500).json({
+    msg: err.message || "Error interno del servidor",
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
+
 //start server
 
 app.listen(app.get("port"), ()=> {

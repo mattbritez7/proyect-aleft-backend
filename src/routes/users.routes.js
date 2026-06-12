@@ -26,16 +26,16 @@ router.post("/register", async (req, res) => {
       Company: req.body.Company || ''
     });
     await newUser.save();
-    res.send("User Created");
+    res.send("Usuario creado");
     console.log(newUser)
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error creating user");
+    res.status(500).send("Error al crear usuario");
   }
 });
 
 router.get("/me", (req, res) => {
-  if (!req.user) return res.status(401).send("Not authenticated");
+  if (!req.user) return res.status(401).send("No autenticado");
   res.send(req.user);
 });
 

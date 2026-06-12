@@ -9,13 +9,13 @@ passport.use(
       const user = await User.findOne({ username });
 
       if (!user) {
-        return done(null, false, { message: 'User not found' })
+        return done(null, false, { message: 'Usuario no encontrado' })
       }
 
       const isPasswordCorrect = await bcrypt.compare(Password, user.Password);
 
       if (!isPasswordCorrect)
-        return done(null, false, { message: 'Incorrect password' });
+        return done(null, false, { message: 'Contraseña incorrecta' });
 
       return done(null, user);
     })

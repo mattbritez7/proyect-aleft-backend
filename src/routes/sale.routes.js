@@ -25,55 +25,62 @@ router.get("/", async (req, res) => {
 
 router.get("/mis-ventas", async (req, res) => {
     try {
+      if (!req.user) return res.status(401).json({ msg: "No autenticado" });
       const sales = await Sale.find({ user: req.user.username});
       console.log(sales);
       res.json(sales);
     } catch (error) {
       console.log(error);
+      res.status(500).json({ msg: error.message || "Error del servidor" });
     }
   });
 
 router.post("/", async (req, res) => {
   try {
+    if (!req.user) return res.status(401).json({ msg: "No autenticado" });
+
     const {
-      Estado,
-      Nombre,
-      Producto,
-      Precio,
-      ValorCuota,
-      Dias,
-      Modalidad,
-      Dni,
-      FechaDeNacimiento,
-      DireccionDelComercio,
-      EntreCalles,
-      DireccionCasa,
-      Localidad,
-      Telefono1,
-      Telefono2,
+      Estado, Nombre, Producto, Precio, ValorCuota, Dias, Modalidad,
+      Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles,
+      DireccionCasa, Localidad, Telefono1, Telefono2,
     } = req.body;
-    const sale = new Sale({
-      Estado,
-      Nombre,
-      Producto,
-      Precio,
-      ValorCuota,
-      Dias,
-      Modalidad,
-      Dni,
-      FechaDeNacimiento,
-      DireccionDelComercio,
-      EntreCalles,
-      DireccionCasa,
-      Localidad,
-      Telefono1,
-      Telefono2,
-    });
+
+    // Build sale data excluding empty fields to avoid Mongoose cast errors
+    const saleData = {
+      Estado: 1, // Default: Pendiente
+    };
+    if (Estado && !isNaN(Number(Estado))) saleData.Estado = Number(Estado);
+    if (Nombre) saleData.Nombre = Nombre;
+    if (Producto) saleData.Producto = Producto;
+    if (Precio) saleData.Precio = Precio;
+    if (ValorCuota) saleData.ValorCuota = ValorCuota;
+    if (Dias) saleData.Dias = Dias;
+    if (Modalidad) saleData.Modalidad = Modalidad;
+    if (Dni) saleData.Dni = Dni;
+    if (FechaDeNacimiento) saleData.FechaDeNacimiento = FechaDeNacimiento;
+    if (DireccionDelComercio) saleData.DireccionDelComercio = DireccionDelComercio;
+    if (EntreCalles) saleData.EntreCalles = EntreCalles;
+    if (DireccionCasa) saleData.DireccionCasa = DireccionCasa;
+    if (Localidad) saleData.Localidad = Localidad;
+    if (Telefono1) saleData.Telefono1 = Telefono1;
+    if (Telefono2) saleData.Telefono2 = Telefono2;
+
+    const sale = new Sale(saleData);
     sale.user = req.user.username;
     await sale.save();
     res.json({ status: "sale saved" });
   } catch (error) {
     console.log(error);
+    let msg = "Error al crear la venta";
+    if (error.name === 'ValidationError') {
+      const campos = Object.keys(error.errors).join(', ');
+      msg = `Datos inválidos en: ${campos}. Revisa los campos del formulario.`;
+    } else if (error.name === 'CastError') {
+      msg = `El campo '${error.path}' tiene un valor incorrecto`;
+    } else if (error.name === 'MongoError' || error.name === 'MongoServerError') {
+      msg = "Error en la base de datos al crear la venta";
+    }
+    res.status(500).json({ msg });
   }
 });
 
@@ -83,7 +90,7 @@ router.put("/:id", async (req, res) => {
     const { Estado, Company } = req.body;
     console.log("PUT /sales/:id body:", req.body, "user:", req.user.username, "role:", req.user.role);
     const newSale = {};
-    if (Estado !== undefined) newSale.Estado = Number(Estado);
+    if (Estado !== undefined && Estado !== null && Estado !== '') newSale.Estado = Number(Estado);
     if (Company !== undefined && req.user.role === 'administrador') newSale.Company = Company;
     console.log("Updating with:", newSale);
     await Sale.findByIdAndUpdate(req.params.id, newSale);
@@ -98,13 +105,13 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ msg: `Invalid id: ${id}` });
+      return res.status(400).json({ msg: `ID inválido: ${id}` });
     const sale = await Sale.findById(id);
-    if (!sale) return res.status(404).json({ msg: "Sale not found" });
+    if (!sale) return res.status(404).json({ msg: "Venta no encontrada" });
     res.json(sale);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ msg: "Error del servidor" });
   }
 });
 
@@ -113,11 +120,12 @@ router.delete("/:id", async (req, res) => {
     const { id: id } = req.params;
     console.log(id);
     if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(404).json({ msg: `No sale with id :${id}` });
+      return res.status(404).json({ msg: `No hay venta con ID: ${id}` });
     const sale = await Sale.findOneAndDelete({ _id: id });
     res.status(200).json(sale);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ msg: error.message || "Error del servidor" });
   }
 });
 module.exports = router;
