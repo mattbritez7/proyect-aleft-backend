@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const cors = require('cors');
 const bodyParser = require("body-parser");
@@ -9,6 +10,7 @@ const bodyParser = require("body-parser");
 require('./passport/local-auth')
 
 const app = express();
+const mongoose = require('mongoose');
 require('./database')
 
 
@@ -44,6 +46,11 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+      ttl: 7 * 24 * 60 * 60,
+      autoRemove: 'native',
+    }),
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
