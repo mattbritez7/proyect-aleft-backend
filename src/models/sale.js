@@ -16,6 +16,7 @@ const SaleSchema = new Schema ({
     EntreCalles: { type: String, required: false},
     DireccionCasa: { type: String, required: false},
     Localidad: { type: String, required: false},
+    TipoComercio: { type: String, required: false},
     Telefono1: { type: String, required: false},
     Telefono2: { type: String, required: false},
     Company: { type: String, default: "", required: false},

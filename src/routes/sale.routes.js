@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
     const {
       Estado, Nombre, Producto, Precio, ValorCuota, Dias, Modalidad,
       Dni, FechaDeNacimiento, DireccionDelComercio, EntreCalles,
-      DireccionCasa, Localidad, Telefono1, Telefono2,
+      DireccionCasa, Localidad, TipoComercio, Telefono1, Telefono2,
     } = req.body;
 
     // Build sale data excluding empty fields to avoid Mongoose cast errors
@@ -61,6 +61,7 @@ router.post("/", async (req, res) => {
     if (DireccionDelComercio) saleData.DireccionDelComercio = DireccionDelComercio;
     if (EntreCalles) saleData.EntreCalles = EntreCalles;
     if (DireccionCasa) saleData.DireccionCasa = DireccionCasa;
+    if (TipoComercio) saleData.TipoComercio = TipoComercio;
     if (Localidad) saleData.Localidad = Localidad;
     if (Telefono1) saleData.Telefono1 = Telefono1;
     if (Telefono2) saleData.Telefono2 = Telefono2;
