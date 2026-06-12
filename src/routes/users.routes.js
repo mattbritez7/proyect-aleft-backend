@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const bcrypt = require("bcrypt");
 const User = require("../models/users")
 const passport = require('passport');
 
@@ -16,11 +15,9 @@ router.post('/login', function(req, res, next) {
 
 router.post("/register", async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.Password, 10);
-
     const newUser = new User({
       Email: req.body.Email,
-      Password: hashedPassword,
+      Password: req.body.Password,
       username: req.body.username,
       role: req.body.role || 'cliente',
       Company: req.body.Company || ''
@@ -65,11 +62,12 @@ router.put("/:id", async (req, res) => {
       if (req.body.Password.length < 6) {
         return res.status(400).json({ msg: "La contraseña debe tener al menos 6 caracteres" });
       }
-      update.Password = await bcrypt.hash(req.body.Password, 10);
+      update.Password = req.body.Password;
     }
     if (req.body.role) update.role = req.body.role;
     if (req.body.Company !== undefined) update.Company = req.body.Company;
-    await User.findByIdAndUpdate(req.params.id, update);
+    const updated = await User.findByIdAndUpdate(req.params.id, update);
+    if (!updated) return res.status(404).json({ msg: "Usuario no encontrado" });
     res.json({ status: "success" });
   } catch (error) {
     console.log(error);
