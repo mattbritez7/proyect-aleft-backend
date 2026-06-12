@@ -26,7 +26,12 @@ router.get("/", async (req, res) => {
 router.get("/mis-ventas", async (req, res) => {
     try {
       if (!req.user) return res.status(401).json({ msg: "No autenticado" });
-      const sales = await Sale.find({ user: req.user.username});
+      let sales;
+      if (req.user.role === 'cliente') {
+        sales = await Sale.find({ Company: req.user.Company });
+      } else {
+        sales = await Sale.find({ user: req.user.username });
+      }
       console.log(sales);
       res.json(sales);
     } catch (error) {
