@@ -75,6 +75,10 @@ mongoose.connect(url)
     app.use("/sales",require("./routes/sale.routes"));
     app.use("/users",require("./routes/users.routes"));
     app.use("/companies",require("./routes/companies.routes"));
+    app.use("/posts",require("./routes/posts.routes"));
+
+    //static files
+    app.use('/uploads', express.static('uploads'));
 
     //static files
     // app.use(express.static()) 
